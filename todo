@@ -1,0 +1,37 @@
+# TODO List
+
+## Error Handling & Edge Cases
+- [ ] **Config fallback:**  
+    If `/etc/linav/linav.conf` is missing, load a local config or exit gracefully with a clear message.
+
+## Logging
+- [ ] **Log timestamp:**  
+    Standardize to ISO format (`%F %T`) so lines sort lexicographically and chronologically.
+- [ ] **Logger improvements:**  
+    - Preserve full message when it contains spaces.  
+    - Detect if `$LOG_FILE` is not writable; print error and exit without breaking `set -e`.  
+    - Make `VERBOSE` flag case-insensitive (`true`/`True`/`TRUE`…).
+
+## Path Handling
+- [ ] **Relative paths:**  
+    Locate `linav.conf` even when `install.sh` is run from outside the project directory (use `dirname "$0"`).
+
+## Package Manager Support
+- [ ] **Package-manager matrix:**  
+    - Define `UPDATE_CMD` / `INSTALL_CMD` for `apt-get`, `dnf`, `yum`, `zypper`.  
+    - Ensure correct placement of `-y` with `apt-get` (option before package).
+
+## Permissions & Ownership
+- [ ] **Log creation:**  
+    Keep `root:adm`, `chmod 640` (or document a different choice).
+
+## Automated Tests to Add
+- [ ] Log line keeps the entire message when it has spaces.
+- [ ] Script doesn’t crash if `/var/log/linav` is missing (creates it).
+- [ ] Running `install.sh` from `/tmp` still finds `linav.conf`.
+- [ ] “No package manager detected” returns code 1 and logs `ERROR`.
+
+## Portability
+- [ ] **Future option:**  
+    Support Fedora/openSUSE (`dnf` / `zypper`).
+
