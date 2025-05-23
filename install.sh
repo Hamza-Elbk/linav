@@ -5,11 +5,13 @@
 #TODO : matrix commandes
 #TODO : help
 #TODO : options 
+#TODO : /var/log/linav/reports/
+#TODO : configure mail
 
 # Require root access to install packages 
 set -euo pipefail   
 shopt -s nullglob
-required_tools=("clamav" "yara" "parallel")
+required_tools=("clamav" "yara" "parallel" "jq")
 PKG_MGR=""
 source ./src/utils/logit.sh
 # Check root permession
@@ -79,5 +81,7 @@ main(){
     install_deps
     
 }
-
+# wget https://github.com/YARA-Rules/rules/archive/refs/heads/master.zip
+#unzip master.zip
+#cat rules-master/*/*.yar > /etc/linav/rules.yar
 main
