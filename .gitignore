@@ -1,4 +1,5 @@
-src/utils/send_email.py
+#src/utils/send_email.py
 src/master.zip
 src/rules-master/
 report.json
+linavcopy.conf
