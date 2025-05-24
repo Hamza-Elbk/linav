@@ -13,6 +13,21 @@ set -euo pipefail
 shopt -s nullglob
 required_tools=("clamav" "yara" "parallel" "jq")
 PKG_MGR=""
+#Create /etc/linav
+create_etc_linav(){
+    if [[ ! -d /etc/linav ]]; then
+     install -d -m 755 /etc/linav
+     if [[ -f linav.conf ]] ; then
+      install -m 644 linav.conf /etc/linav/
+     else 
+       
+       echo "Warning: linav.conf not found in current directory." >&2
+       exit 1
+     fi
+     
+    fi 
+}
+
 source ./src/utils/logit.sh
 # Check root permession
 require_root(){
@@ -48,25 +63,11 @@ install_deps(){
     done
 }
 
-#Create /etc/linav
-create_etc_linav(){
-    if [[ ! -d /etc/linav ]]; then
-     install -d -m 755 /etc/linav
-     if [[ -f linav.conf ]] ; then
-      install -m 644 linav.conf /etc/linav/
-     else 
-       log "ERROR" "linav.conf not found in current directory"
-       echo "Warning: linav.conf not found in current directory." >&2
-       exit 1
-     fi
-     
-    fi 
-}
 
 #Create log file
 create_logdirectory(){
     if [[ ! -d  /var/log/linav ]]; then
-      log "INFOS" "Creating /var/log/linav/history.log"
+      echo  "INFOS" "Creating /var/log/linav/history.log"
       install -d -m 755 -o root  "/var/log/linav"
       touch "/var/log/linav/history.log"
       chmod 644 "/var/log/linav/history.log"
