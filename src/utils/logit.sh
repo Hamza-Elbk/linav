@@ -1,4 +1,4 @@
-source /etc/linav/linav.conf
+#source /etc/linav/linav.conf
 log(){
   if [[ "${VERBOSE:-}" == "True" ]]; then 
     echo "[$(date +%D%l:%M:%S)] : $(whoami) : $1 :   $2"
