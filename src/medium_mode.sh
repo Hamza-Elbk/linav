@@ -270,7 +270,8 @@ medium_scanner_find_suspicious_files() {
         -name "*.dll" -o \
         -name "*.vbs" -o \
         -name "*.ps1" -o \
-        -name "*.cmd" \
+        -name "*.cmd" -o \
+        -name "*.jar" \
     \) 2>/dev/null
     
     return 0
@@ -349,7 +350,6 @@ medium_scanner_run_scan() {
     fi
     
     log_info "Starting MEDIUM mode scan on: $target_dir"
-    
     # Find suspicious files using mapfile
     mapfile -t suspicious_files < <(medium_scanner_find_suspicious_files "$target_dir")
     

@@ -164,14 +164,44 @@ fi
 # --- Main Script Logic ---
 
 # Initialize logging if -l is specified for this main script
+
+
 if [[ -n "$LOG_DIR_MAIN" ]]; then
+    # First create the directory and check if it's writable as you already do
     mkdir -p "$LOG_DIR_MAIN"
     if [[ ! -d "$LOG_DIR_MAIN" || ! -w "$LOG_DIR_MAIN" ]]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] : $SCRIPT_NAME : ERROR : Cannot create or write to log directory: '$LOG_DIR_MAIN'. File logging disabled for this script." >&2
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] : "$(whoami)" : ERROR : Cannot create or write to log directory: '$LOG_DIR_MAIN'. File logging disabled for this script." >&2
         LOG_DIR_MAIN=""
     else
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] : $SCRIPT_NAME : INFO : Main logging enabled in: '$LOG_DIR_MAIN/main_linav_suite.log'"
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] : "$(whoami)" : INFO : Main logging enabled in: '$LOG_DIR_MAIN/main_linav_suite.log'"
         export MAIN_LOG_DIR="$LOG_DIR_MAIN"
+        
+        # Override the log function regardless of whether it came from logit.sh or fallback
+        log() {
+            local level="$1"
+            local message="$2"
+            local timestamp
+            timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+            
+            # Always log to the specified log directory
+            echo "[$timestamp] : "$(whoami)" : $level : $message" >> "$LOG_DIR_MAIN/main_linav_suite.log"
+            
+            # Also log to console for visibility
+            if [[ "$level" == "ERROR" || "$level" == "WARN" ]]; then
+                echo "[$timestamp] : "$(whoami)" : $level : $message" >&2
+            else
+                echo "[$timestamp] : "$(whoami)" : $level : $message"
+            fi
+        }
+        
+        # Define helper functions that might have been provided by logit.sh
+        # so we ensure they all use our new log function
+        log_info() { log "INFO" "$1"; }
+        log_error() { log "ERROR" "$1"; }
+        log_warn() { log "WARN" "$1"; } 
+        log_debug() { log "DEBUG" "$1"; }
+        
+        log "INFO" "Logging method overridden to use custom log directory: $LOG_DIR_MAIN"
     fi
 fi
 
@@ -192,6 +222,13 @@ if ${RESET_PARAMS}; then
     fi
     log "INFO" "Starting parameter reset (admin action)..."
     echo "Resetting parameters (admin action)..."
+    #echo "Before ......................."
+    #cat /etc/linav/linav.conf
+    rm /etc/linav/linav.conf
+    cp "$SRC_DIR"/../linav.conf /etc/linav/
+    #echo "After ......................"
+    #cat /etc/linav/linav.conf
+
     # TODO: Implement specific reset logic here. Examples:
     # log "INFO" "Cleaning temporary configurations..."
     # rm -rf /etc/linav/temp_config/*
@@ -199,8 +236,7 @@ if ${RESET_PARAMS}; then
     # find "${MAIN_LOG_DIR:-/var/log/linav}" -type f -name "report_*.txt" -mtime +30 -exec rm {} \;
     # log "INFO" "Resetting signature databases (if applicable)..."
     # /opt/linav/bin/update_signatures --force_reset
-    log "WARN" "The parameter reset logic (-r) is a placeholder and must be implemented."
-    echo "Reset logic to be implemented here."
+ 
     log "INFO" "Parameter reset completed (placeholder)."
 fi
 
